@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect } from "react";
+import axios from "axios";
 
 export const MemoryGame = createContext();
 
@@ -10,7 +11,8 @@ export default function MemoryGameProvider({ children }) {
   const [score, setScore] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
-  const pics = [
+  const [pics, setPics] = useState([]);
+  /*   const pics = [
     "1",
     "1",
     "2",
@@ -27,7 +29,17 @@ export default function MemoryGameProvider({ children }) {
     "7",
     "8",
     "8",
-  ];
+  ]; */
+  useEffect(() => {
+    const getPictures = async () => {
+      const res = await axios.get("cards/getPic");
+      const pictures = Object.values(res.data);
+
+      setPics(pictures);
+      console.log("pictures", pictures);
+    };
+    getPictures();
+  }, []);
 
   return (
     <MemoryGame.Provider
