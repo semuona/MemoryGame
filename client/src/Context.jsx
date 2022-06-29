@@ -3,6 +3,8 @@ import axios from "axios";
 
 export const MemoryGame = createContext();
 
+const SERVER_URI = "http://localhost:8080";
+
 export default function MemoryGameProvider({ children }) {
   //------------States ---------
 
@@ -15,7 +17,7 @@ export default function MemoryGameProvider({ children }) {
   //---------Getting the cards from the server-------
   useEffect(() => {
     const getPictures = async () => {
-      const res = await axios.get("cards/getPic");
+      const res = await axios.get(`${SERVER_URI}/cards/getPic`);
       const pictures = Object.values(res.data);
 
       setPics(pictures);
