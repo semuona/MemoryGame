@@ -34,14 +34,20 @@ export default function Game() {
           leftCards.indexOf(selectedCards[1]) &&
         selectedCards[0].id === selectedCards[1].id
       ) {
+        selectedCards[0].open = true;
+        selectedCards[1].open = true;
+
         //----removing matching cards from total array
-        const arrayWithoutMatchedCards = leftCards.filter(
+        /*     const arrayWithoutMatchedCards = leftCards.filter(
           (item) => item.id !== selectedCards[0].id
         );
         setLeftCards(arrayWithoutMatchedCards);
 
-        //--If there are left cards then set turn to another player, else set game over
-        leftCards.length === 2 ? setGameOver(true) : setTurn(!turn);
+ */
+        //--Triggering the game over state or the turn state
+        scorePlayer1.length + scorePlayer2.length === 7
+          ? setGameOver(true)
+          : setTurn(!turn);
 
         //reset selected cards
         setSelectedCards([]);
@@ -62,7 +68,7 @@ export default function Game() {
         setTurn(!turn);
       }
     }
-  }, [selectedCards, turn]);
+  }, [selectedCards, turn, gameOver]);
 
   const handleSelect = (pic) => {
     setSelectedCards([...selectedCards, pic]);
@@ -70,9 +76,9 @@ export default function Game() {
   //---Calculate the winner
   const calculateWinner = () => {
     if (scorePlayer1.length > scorePlayer2.length) {
-      return "Winner is: " + player1;
+      return "Winner is: " + player1 || "Player 1";
     } else if (scorePlayer1.length < scorePlayer2.length) {
-      return "Winner is: " + player2;
+      return "Winner is: " + player2 || "Player 2";
     } else {
       return "Well Done Both! It's a Draw";
     }
@@ -119,12 +125,13 @@ export default function Game() {
         </Link>{" "}
         <button
           onClick={() => {
+            setGameOver(false);
+            shuffle(pics);
+            setLeftCards([...pics]);
             setScorePlayer1([]);
             setScorePlayer2([]);
             setWrongGuessesPlayer1(0);
             setWrongGuessesPlayer2(0);
-            shuffle(pics);
-            setLeftCards([...pics]);
           }}
         >
           Reset The Game
@@ -158,7 +165,12 @@ export default function Game() {
           {leftCards?.map((pic, index) => {
             return (
               <>
-                <div className="flip-container" key={index + pic.id}>
+                <div
+                  className={
+                    pic?.open ? "flip-container hide" + index : "flip-container"
+                  }
+                  key={index + pic.id}
+                >
                   <div className="flipper">
                     <div
                       style={{ backgroundImage: `url(${Cover})` }}
@@ -194,6 +206,7 @@ export default function Game() {
                     setScorePlayer2([]);
                     setWrongGuessesPlayer1(0);
                     setWrongGuessesPlayer2(0);
+                    setGameOver(false);
                     shuffle(pics);
                     setLeftCards([...pics]);
                   }}

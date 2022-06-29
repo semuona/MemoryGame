@@ -22,7 +22,7 @@ export default function MemoryGameProvider({ children }) {
       // console.log("pictures", pictures);
     };
     getPictures();
-  }, []);
+  }, [gameOver, selectedCards]);
 
   return (
     <MemoryGame.Provider
