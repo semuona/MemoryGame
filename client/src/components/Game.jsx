@@ -2,83 +2,155 @@ import React, { useContext, useState } from "react";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { MemoryGame } from "../Context";
+import Cover from "./images/galaxy.jpg";
+import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
+
 export default function Game() {
+  //CONTEXT
   const {
     player1,
-    setPlayer1,
     player2,
-    setPlayer2,
-    allCards,
-    setAllCards,
     selectedCards,
     setSelectedCards,
-    score,
-    setScore,
-    gameStarted,
-    setGameStarted,
     gameOver,
     setGameOver,
     pics,
   } = useContext(MemoryGame);
-  const [turn, setTurn] = useState(false);
+
+  //STATES
+  const [turn, setTurn] = useState(false); //true = player2, false = player1
   const [scorePlayer1, setScorePlayer1] = useState([]);
   const [scorePlayer2, setScorePlayer2] = useState([]);
   const [wrongGuessesPlayer1, setWrongGuessesPlayer1] = useState(0);
   const [wrongGuessesPlayer2, setWrongGuessesPlayer2] = useState(0);
-
-  const [leftCards, setLeftCards] = useState([...pics, ...pics]);
+  const [leftCards, setLeftCards] = useState([...pics]);
 
   useEffect(() => {
-    //-------------MATCH--------------
+    //-------------------IF-MATCH--------------------------
     if (selectedCards.length === 2) {
-      if (selectedCards[0] === selectedCards[1]) {
-        // leftCards.splice(leftCards.indexOf(selectedCards[0]), 2);
-        const newArray = leftCards.filter(
-          (item) => item.id !== selectedCards[0]
+      if (
+        //---If it is not same cards selected twice
+        leftCards.indexOf(selectedCards[0]) !==
+          leftCards.indexOf(selectedCards[1]) &&
+        selectedCards[0].id === selectedCards[1].id
+      ) {
+        //----removing matching cards from total array
+        const arrayWithoutMatchedCards = leftCards.filter(
+          (item) => item.id !== selectedCards[0].id
         );
-        console.log("index", newArray);
-        setLeftCards(newArray);
+        setLeftCards(arrayWithoutMatchedCards);
 
-        leftCards.length === 0 ? setGameOver(true) : setTurn(!turn);
+        //--If there are left cards then set turn to another player, else set game over
+        leftCards.length === 2 ? setGameOver(true) : setTurn(!turn);
+
+        //reset selected cards
         setSelectedCards([]);
-        console.log("leftCards", leftCards);
+
+        //--Depending on whose turn it is, add score to player1 or player2
         !turn
           ? scorePlayer1.push(selectedCards[0])
           : scorePlayer2.push(selectedCards[0]);
       } else {
+        //-------------------NO--MATCH------------------------
+
         !turn
           ? setWrongGuessesPlayer1(wrongGuessesPlayer1 + 1)
           : setWrongGuessesPlayer2(wrongGuessesPlayer2 + 1);
-        setTurn(!turn);
 
-        console.log("no match");
+        setTurn(!turn);
         setSelectedCards([]);
         setTurn(!turn);
       }
     }
   }, [selectedCards, turn]);
 
-  console.log("selected", selectedCards);
-
-  const handleSelect = (id) => {
-    setSelectedCards([...selectedCards, id]);
+  const handleSelect = (pic) => {
+    setSelectedCards([...selectedCards, pic]);
   };
+  //---Calculate the winner
+  const calculateWinner = () => {
+    if (scorePlayer1.length > scorePlayer2.length) {
+      return "Winner is: " + player1;
+    } else if (scorePlayer1.length < scorePlayer2.length) {
+      return "Winner is: " + player2;
+    } else {
+      return "Well Done Both! It's a Draw";
+    }
+  };
+
+  // shuffle the cards every time the page is loaded
+  function shuffle(array) {
+    let currentIndex = array.length,
+      randomIndex;
+    while (currentIndex !== 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex],
+        array[currentIndex],
+      ];
+    }
+    return array;
+  }
 
   return (
     <div>
-      <Link to="/">Go back</Link>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "left",
+          alignItems: "center",
+        }}
+      >
+        {" "}
+        <Link
+          to="/"
+          style={{
+            color: "whitesmoke",
+            textDecoration: "none",
+            cursor: "pointer",
+            padding: "20px",
+            display: "flex",
+
+            alignItems: "center",
+          }}
+        >
+          <ArrowCircleLeftIcon style={{ marginRight: "10px" }} /> Go back
+        </Link>{" "}
+        <button
+          onClick={() => {
+            setScorePlayer1([]);
+            setScorePlayer2([]);
+            setWrongGuessesPlayer1(0);
+            setWrongGuessesPlayer2(0);
+            shuffle(pics);
+            setLeftCards([...pics]);
+          }}
+        >
+          Reset The Game
+        </button>{" "}
+      </div>
       <div className="mainContainer">
         <div className="player1Container">
-          <h1 style={{ color: !turn && "green" }}>
+          <h1
+            className="playersName"
+            style={{
+              color: !turn && "yellow",
+              border: !turn && "4px solid yellow",
+            }}
+          >
             {player1 === "" ? "player 1" : player1}
           </h1>
+          <div> Score is: {scorePlayer1?.length}</div>
           <div>Wrong guesses: {wrongGuessesPlayer1}</div>
-          <div> score is:{scorePlayer1?.length}</div>
           <div>
             {scorePlayer1?.map((card, index) => (
-              <div key={index} className="guessedCard">
-                {card}
-              </div>
+              <img
+                key={index + card.id + index}
+                className="guessedCard"
+                src={card.url}
+                alt="planet"
+              />
             ))}
           </div>
         </div>
@@ -86,18 +158,23 @@ export default function Game() {
           {leftCards?.map((pic, index) => {
             return (
               <>
-                <div className="flip-container" key={index}>
+                <div className="flip-container" key={index + pic.id}>
                   <div className="flipper">
                     <div
+                      style={{ backgroundImage: `url(${Cover})` }}
                       className="picContainer front"
-                      onClick={() => handleSelect(pic.id)}
+                      onClick={() => {
+                        handleSelect(pic);
+                      }}
                     ></div>
-                    <div
+                    <img
                       className="picContainer back"
-                      onClick={() => handleSelect(pic.id)}
-                    >
-                      {pic.id}
-                    </div>
+                      onClick={() => {
+                        handleSelect(pic);
+                      }}
+                      src={pic.url}
+                      alt="planet"
+                    />
                   </div>
                 </div>
               </>
@@ -105,35 +182,55 @@ export default function Game() {
           })}
 
           {gameOver ? (
-            <div>
-              <h1>Game Over</h1>
-              <p>
-                Winner is:{" "}
-                {scorePlayer1.length > scorePlayer2.length
-                  ? player1 === ""
-                    ? "Player 1"
-                    : player1
-                  : player2 === ""
-                  ? "Player 2"
-                  : player2}
-              </p>{" "}
+            <div className="gameOverContainer">
+              <div>
+                <h1>Game Over</h1>
+                <p>
+                  <span style={{ color: "yellow" }}>{calculateWinner()}</span>
+                </p>
+                <button
+                  onClick={() => {
+                    setScorePlayer1([]);
+                    setScorePlayer2([]);
+                    setWrongGuessesPlayer1(0);
+                    setWrongGuessesPlayer2(0);
+                    shuffle(pics);
+                    setLeftCards([...pics]);
+                  }}
+                >
+                  Play again
+                </button>
+              </div>
             </div>
           ) : null}
         </div>
         <div className="player2Container">
-          <h1 style={{ color: turn && "green" }}>
+          <h1
+            className="playersName"
+            style={{
+              color: turn && "yellow",
+              border: turn && "4px solid yellow",
+            }}
+          >
             {player2 === "" ? "player 2" : player2}
           </h1>
+          <div> Score is: {scorePlayer2?.length}</div>
           <div>Wrong guesses: {wrongGuessesPlayer2}</div>
-          <div> score is:{scorePlayer2?.length}</div>
           <div>
             {scorePlayer2?.map((card, index) => (
-              <div key={index} className="guessedCard">
-                {card}
-              </div>
+              <img
+                key={index + card.id + index + card.id}
+                className="guessedCard"
+                src={card.url}
+                alt="planet"
+              />
             ))}
           </div>
         </div>
+      </div>
+      <div className="save">
+        {" "}
+        {/*   <button disabled >Save The game</button> */}
       </div>
     </div>
   );

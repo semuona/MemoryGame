@@ -1,16 +1,15 @@
 import React, { useContext } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import { MemoryGame } from "../Context";
 import Button from "@mui/material/Button";
 export default function Login() {
   const { setPlayer1, setPlayer2, player1, player2, pics, setGameOver } =
     useContext(MemoryGame);
-  console.log(player1, player2);
 
   const navigate = useNavigate();
 
-  // shuffle the cards every time the page is loaded
+  // shuffle the cards every time after loading the game
   function shuffle(array) {
     let currentIndex = array.length,
       randomIndex;
@@ -28,17 +27,21 @@ export default function Login() {
   return (
     <div className="loginContainer">
       <div>
+        <h3>Player one</h3>
         <TextField
           id="outlined-basic"
           label="Player One"
           variant="outlined"
+          placeholder="Enter your name"
           value={player1}
           onChange={(e) => setPlayer1(e.target.value)}
           required
         />
+        <h3>Player two</h3>
         <TextField
           id="outlined-basic"
           label="Player Two"
+          placeholder="Enter your name"
           variant="outlined"
           value={player2}
           onChange={(e) => setPlayer2(e.target.value)}

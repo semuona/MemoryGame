@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100;200;300;400;500;600;700;800&display=swap");
+
 *,
 *::after,
 *::before {
@@ -6,12 +7,20 @@
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
   font-family: "Anek Latin", sans-serif;
+  color: whitesmoke;
   font-size: 2rem;
   width: 100vw;
   height: 100vh;
+  background-image: url("./components/images/galaxy.jpg");
+  background-position: center;
+  background-size: cover;
+  object-fit: cover;
+  overflow: hidden;
 }
+//--------Login/Landing Page----------------
 .loginContainer {
   display: flex;
   flex-direction: column;
@@ -19,97 +28,173 @@ body {
   justify-content: center;
   height: 80vh;
 
-  * {
-    margin-right: 20px;
-    margin-bottom: 10px;
+  h3 {
+    text-align: center;
+    margin: 25px 0;
+  }
+
+  button {
+    margin-top: 55px;
+    background-color: rgba(255, 255, 255, 0.436);
+    width: 200px;
+    height: 50px;
+    color: rgba(0, 0, 0, 0.525);
+    border-radius: 10px;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: rgba(255, 255, 255, 0.8);
   }
 }
+
+#outlined-basic {
+  border-radius: 10px !important;
+  height: 100% !important;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 1.8rem;
+  font-weight: bold;
+  padding: 15px;
+  outline: none;
+}
+//-----------------------Login/Landing Ends here-------------------------
+
 .mainContainer {
   display: flex;
   justify-content: space-between;
   padding: 2% 5%;
   height: 80vh;
+  position: relative;
 }
+//----------CARDS----------------
 .gameContainer {
   display: grid;
-  grid-template-columns: auto auto auto auto;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  grid-gap: 1rem;
   perspective: 1000px;
 }
+
+//-----------Players/Scores/Guesses----------------
 .player1Container,
 .player2Container {
   width: 20%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  * {
+    margin-top: 10%;
+  }
+  .playersName {
+    font-weight: bold;
+    color: white;
+    border: 5px solid rgba(255, 255, 255, 0.389);
+    border-radius: 15px;
+    width: 300px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: rgba(255, 255, 255, 0.2) 0px 18px 50px -10px;
+  }
 }
+
+//------------Single Card Styling---------------
 .picContainer {
   width: 200px;
   height: 200px;
   background-color: rgba(255, 255, 255, 0.8);
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  padding: 20px;
   font-size: 30px;
   text-align: center;
   cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  object-fit: cover;
 }
 
 .guessedCard {
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
+  border-radius: 25%;
   margin: 15px;
-  background-color: rgba(255, 255, 255, 0.8);
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  padding: 20px;
+  box-shadow: rgba(255, 255, 255, 0.5) 0px 10px 50px;
+  background-position: center;
+  background-size: cover;
+  object-fit: cover;
   font-size: 30px;
   text-align: center;
+}
+//--------------------------------------------------
+
+//--------Game over container--------------------
+.gameOverContainer {
+  position: absolute;
+  top: 25%;
+  right: -500%;
+  div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    padding: 25px;
+    width: 500px;
+    border: 5px solid rgba(255, 255, 255, 0.389);
+    border-radius: 15px;
+    height: 400px;
+    box-shadow: rgba(255, 255, 255, 0.2) 0px 18px 50px -10px;
+  }
+  div:hover {
+    border: 5px solid rgba(255, 255, 255, 0.653);
+  }
+}
+button {
+  background-color: rgba(255, 255, 255, 0.436);
+  width: 200px;
+  height: 50px;
+  color: rgba(0, 0, 0, 0.525);
+  border-radius: 10px;
+  font-size: 1.5rem;
   cursor: pointer;
 }
+button:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+}
 
-// FLIPPING CARDS-----------------------------------------
+// ------------------FLIPPING CARDS---------------
 
-/* entire container, keeps perspective */
 .flip-container {
   perspective: 500px;
 }
-/* flip the pane when hovered */
+
 .flip-container:hover .flipper,
 .flip-container.hover .flipper {
   transform: rotateY(180deg);
 }
-
 .flip-container,
 .front,
 .back {
   width: 200px;
   height: 200px;
 }
-
-/* flip speed goes here */
 .flipper {
   transition: 0.6s;
   transform-style: preserve-3d;
-
   position: relative;
 }
-
-/* hide back of pane during swap */
 .front,
 .back {
   backface-visibility: hidden;
-
   position: absolute;
   top: 0;
   left: 0;
 }
-
-/* front pane, placed above back */
 .front {
   z-index: 2;
-  /* for firefox 31 */
   transform: rotateY(0deg);
 }
-
-/* back, initially hidden pane */
 .back {
   transform: rotateY(180deg);
 }
