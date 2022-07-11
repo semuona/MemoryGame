@@ -16,7 +16,7 @@ router.post("/login", async (req, res) => {
 
     //registered user
     let player = await Player.findOne({ name }).select("-__v");
-    console.log("player already registered:", player);
+
     if (player) {
       res.send({ success: true, player: player });
       console.log("old player login:", player);
@@ -46,8 +46,6 @@ router.patch("/addinfo/:playerid", async (req, res) => {
   const { totalScore, victories } = req.body;
 
   try {
-    console.log("add info req.body", req.body);
-
     const player = await Player.findByIdAndUpdate(
       playerid,
       { victories: victories, totalScore: totalScore },
